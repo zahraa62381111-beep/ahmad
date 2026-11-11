@@ -23,7 +23,7 @@ h1{color:#ff0000;font-size:24px;margin:15px 0}
 .small{font-size:12px;color:#888;margin-top:20px}
 </style>
 </head>
-<body onclick="forceLockExperience()">
+<body onclick="forceFullscreen()">
 
 <!-- المرحلة 1: فحص وهمي -->
 <div id="page1" class="page active">
@@ -70,31 +70,12 @@ h1{color:#ff0000;font-size:24px;margin:15px 0}
 </div>
 
 <script>
-let prankFinished = false;
-
-// تفعيل وضع ملء الشاشة القسري
-function forceLockExperience() {
+// تفعيل وضع ملء الشاشة فور أول ضغطة ع الشاشة لإعطاء واقعية كاملة
+function forceFullscreen() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(()=>{});
     }
 }
-
-// قفل زر الرجوع تماماً
-history.pushState(null, null, location.href);
-window.onpopstate = function () {
-    history.go(1);
-    if(navigator.vibrate) navigator.vibrate(300);
-    alert("خطأ: لا يمكن التراجع أثناء عملية الحماية الأمنية!");
-};
-
-// شل محاولة الهروب: إذا حاول الخروج (زر هوم أو تبديل تطبيقات) يعود قسرياً للمتصفح مع اهتزاز قوي
-document.addEventListener("visibilitychange", function() {
-    if (document.hidden && !prankFinished) {
-        if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
-        // محاولة إعادة التركيز الإجباري
-        window.focus();
-    }
-});
 
 // تحديد نوع الجهاز بدقة لزيادة الواقعية
 let ua = navigator.userAgent;
@@ -142,13 +123,11 @@ taps++;
 document.getElementById('fingerText').innerText='عدد المحاولات: '+taps+' / 3';
 if(navigator.vibrate) navigator.vibrate(100);
 if(taps>=3){
-    prankFinished = true; // إيقاف قيود الهروب لأن المزحة انتهت
     document.getElementById('page3').classList.remove('active');
     document.getElementById('page4').classList.add('active');
     document.body.style.background='#111';
     
-    // فك القيود عند انتهاء المزحة
-    window.onpopstate = null;
+    // الخروج من وضع ملء الشاشة وإظهار المتصفح طبيعياً عند انتهاء المقلب
     if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
 }
 }
